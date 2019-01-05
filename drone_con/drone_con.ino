@@ -20,11 +20,11 @@ MCP4922 DAC2(11, 13, A4, A5); // (MOSI,SCK,CS,LDAC) define Connections for NANO_
 
 void setup() {
   SPI.begin();
-  
+
   pinMode(PS2_SEL, OUTPUT);
   digitalWrite(PS2_SEL, HIGH);
   PAD.init();
-  
+
   Serial.begin(9600);
 }
 
@@ -36,6 +36,7 @@ void loop()
     if (v > 5.0) v = 0;
     DAC1.Set(calcDAC(v), calcDAC(5.0 - v));
     DAC2.Set(calcDAC(5.0 - v), calcDAC(v));
+    PAD.poll();
     delay(500);
 
     Serial.print("DAC1:");
@@ -46,7 +47,13 @@ void loop()
     Serial.print("DAC2:");
     Serial.print (getVoltage(analogRead(A6)));
     Serial.print("  ");
-    Serial.println (getVoltage(analogRead(A7)));
+    Serial.print (getVoltage(analogRead(A7)));
+    Serial.print("\t");
+    Serial.print("PS_CON:");
+    Serial.print(PAD.read(PS_PAD::ANALOG_LX));
+    Serial.print("  ");
+    Serial.print(PAD.read(PS_PAD::ANALOG_LY));
+    Serial.println("");
   }
 }
 
