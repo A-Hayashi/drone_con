@@ -1,12 +1,12 @@
 
 /******************************************************************************
-*  Device:   MCP4922                                                          *
-*  Platform: Arduino                                                          *
-*  File:     MCP4922.h                                                        *
+   Device:   MCP4922
+   Platform: Arduino
+   File:     MCP4922.h
 *                                                                             *
-*  MCP4922.cpp - Library for driving MCP4922 2 channel DAC using hardware SPI.*
-*  Created by Helge Nodland, January 1, 2015.                                 *
-*  Released into the public domain.                                           *
+   MCP4922.cpp - Library for driving MCP4922 2 channel DAC using hardware SPI.
+   Created by Helge Nodland, January 1, 2015.
+   Released into the public domain.
 ******************************************************************************/
 
 
@@ -20,11 +20,13 @@
 #include "WProgram.h"
 #endif
 
+#include "SPI.h"
+
 
 class MCP4922
 {
   public:
-    MCP4922(int SDI, int SCK,int CS, int LDAC);
+    MCP4922(int SDI, int SCK, int CS, int LDAC);
     void Set(int A, int B);
 
   private:
@@ -32,7 +34,7 @@ class MCP4922
     int _SCK;
     int _CS;
     int _LDAC;
-
+    SPISettings _SPISettings;
 
     //void sendSPIHeader();
     void sendIntValueSPI(int A, int B);

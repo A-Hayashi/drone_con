@@ -23,7 +23,7 @@ void setup() {
   
   pinMode(PS2_SEL, OUTPUT);
   digitalWrite(PS2_SEL, HIGH);
-//  PAD.init();
+  PAD.init();
   
   Serial.begin(9600);
 }
