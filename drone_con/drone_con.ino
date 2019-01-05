@@ -28,35 +28,34 @@ void setup() {
   Serial.begin(9600);
 }
 
-void loop()
-{
-  float v = 0;
-  while (true) {
-    v += 0.1;
-    if (v > 5.0) v = 0;
-    DAC1.Set(calcDAC(v), calcDAC(5.0 - v));
-    DAC2.Set(calcDAC(5.0 - v), calcDAC(v));
-    PAD.poll();
-    delay(500);
-
-    Serial.print("DAC1:");
-    Serial.print (getVoltage(analogRead(A0)));
-    Serial.print("  ");
-    Serial.print (getVoltage(analogRead(A1)));
-    Serial.print("\t");
-    Serial.print("DAC2:");
-    Serial.print (getVoltage(analogRead(A6)));
-    Serial.print("  ");
-    Serial.print (getVoltage(analogRead(A7)));
-    Serial.print("\t");
-    Serial.print("PS_CON:");
-    Serial.print(PAD.read(PS_PAD::ANALOG_LX));
-    Serial.print("  ");
-    Serial.print(PAD.read(PS_PAD::ANALOG_LY));
-    Serial.println("");
-  }
-}
-
+//void loop()
+//{
+//  float v = 0;
+//  while (true) {
+//    v += 0.1;
+//    if (v > 5.0) v = 0;
+//    DAC1.Set(calcDAC(v), calcDAC(5.0 - v));
+//    DAC2.Set(calcDAC(5.0 - v), calcDAC(v));
+//    PAD.poll();
+//    delay(500);
+//
+//    Serial.print("DAC1:");
+//    Serial.print (getVolt(analogRead(A0)));
+//    Serial.print("  ");
+//    Serial.print (getVolt(analogRead(A1)));
+//    Serial.print("\t");
+//    Serial.print("DAC2:");
+//    Serial.print (getVolt(analogRead(A6)));
+//    Serial.print("  ");
+//    Serial.print (getVolt(analogRead(A7)));
+//    Serial.print("\t");
+//    Serial.print("PS_CON:");
+//    Serial.print(PAD.read(PS_PAD::ANALOG_LX));
+//    Serial.print("  ");
+//    Serial.print(PAD.read(PS_PAD::ANALOG_LY));
+//    Serial.println("");
+//  }
+//}
 
 int calcDAC(float v)
 {
@@ -66,28 +65,64 @@ int calcDAC(float v)
   return val;
 }
 
-float getVoltage(int ad)
+float getVolt(int ad)
 {
   float val = (ad * 5.0) / 1024;
   return val;
 }
 
 
-//void loop() {
-//  PAD.poll();
-//
-//  int lx = PAD.read(PS_PAD::ANALOG_LX);
-//  int ly = PAD.read(PS_PAD::ANALOG_LY);
-//  int rx = PAD.read(PS_PAD::ANALOG_RX);
-//  int ry = PAD.read(PS_PAD::ANALOG_RY);
-//
-//
-//  Serial.print(lx);
-//  Serial.print("\t");
-//  Serial.print(ly);
-//  Serial.print("\t");
-//  Serial.print(rx);
-//  Serial.print("\t");
-//  Serial.print(ry);
-//  Serial.println();
-//}
+float fmap(float x, float in_min, float in_max, float out_min, float out_max)
+{
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+
+float convJoy2Volt(int data)
+{
+  float val;
+
+  data = MAX(data, -127);
+  data = MIN(data, 127);
+  val = fmap(data, -127, 127, 0.0, 5.0);
+
+  return val;
+}
+
+
+void loop() {
+  PAD.poll();
+
+  float lx = convJoy2Volt(PAD.read(PS_PAD::ANALOG_LX));
+  float ly = convJoy2Volt(PAD.read(PS_PAD::ANALOG_LY));
+  float rx = convJoy2Volt(PAD.read(PS_PAD::ANALOG_RX));
+  float ry = convJoy2Volt(PAD.read(PS_PAD::ANALOG_RY));
+
+  DAC1.Set(calcDAC(lx), calcDAC(ly));
+  DAC2.Set(calcDAC(rx), calcDAC(ry));
+
+  Serial.print("LX:");
+  Serial.print(lx);
+  Serial.print("\t");
+  Serial.print("LY:");
+  Serial.print(ly);
+  Serial.print("\t");
+  Serial.print("RX:");
+  Serial.print(rx);
+  Serial.print("\t");
+  Serial.print("RY:");
+  Serial.print(ry);
+  Serial.print("\t\t");
+
+  Serial.print("DAC1:");
+  Serial.print (getVolt(analogRead(A0)));
+  Serial.print("\t");
+  Serial.print (getVolt(analogRead(A1)));
+  Serial.print("\t");
+  Serial.print("DAC2:");
+  Serial.print (getVolt(analogRead(A6)));
+  Serial.print("\t");
+  Serial.print (getVolt(analogRead(A7)));
+
+  Serial.println();
+}
