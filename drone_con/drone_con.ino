@@ -84,8 +84,31 @@ float convJoy2Volt(int data)
 
   data = MAX(data, -127);
   data = MIN(data, 127);
-  val = fmap(data, -127, 127, 0.0, 5.0);
+  val = fmap(data, -127, 127, 3.319, 0.001);
 
+  return val;
+}
+
+
+float convJoy2Volt2(int data)
+{
+  float val;
+
+  data = MAX(data, -127);
+  data = MIN(data, 127);
+  val = fmap(data, -127, 127, 0.001, 3.319);
+
+  return val;
+}
+
+float convJoy2VoltThrottle(int data)
+{
+  float val;
+
+  data = MAX(data, 0);
+  data = MIN(data, 127);
+  val = fmap(data, 0, 127, 0.001, 3.319);
+  
   return val;
 }
 
@@ -94,8 +117,8 @@ void loop() {
   PAD.poll();
 
   float lx = convJoy2Volt(PAD.read(PS_PAD::ANALOG_LX));
-  float ly = convJoy2Volt(PAD.read(PS_PAD::ANALOG_LY));
-  float rx = convJoy2Volt(PAD.read(PS_PAD::ANALOG_RX));
+  float ly = convJoy2VoltThrottle(PAD.read(PS_PAD::ANALOG_LY));
+  float rx = convJoy2Volt2(PAD.read(PS_PAD::ANALOG_RX));
   float ry = convJoy2Volt(PAD.read(PS_PAD::ANALOG_RY));
 
   DAC1.Set(calcDAC(lx), calcDAC(ly));
